@@ -15,7 +15,11 @@
     <header>
       <button id="homeBtn" class="icon-btn" aria-label="Voltar ao início">⌂</button>
       <div class="brand"><span>NEURO</span> BOLHA</div>
-      <button id="soundBtn" class="icon-btn" aria-label="Desligar som">🔊</button>
+      <div class="header-actions">
+        <button id="a11yBtn" class="icon-btn" aria-label="Abrir recursos de acessibilidade">♿</button>
+        <button id="librasBtn" class="icon-btn libras-btn" aria-label="Abrir tradução em Libras">LIBRAS</button>
+        <button id="soundBtn" class="icon-btn" aria-label="Desligar som">🔊</button>
+      </div>
     </header>
 
     <main>
@@ -68,6 +72,7 @@
           </div>
         </div>
         <p class="tip">Toque no tabuleiro para mirar e lançar</p>
+        <p id="gameStatus" class="sr-only" aria-live="polite">Fase 1. Pontuação zero. A Demência está com cem por cento de resistência.</p>
       </section>
     </main>
   </div>
@@ -82,9 +87,49 @@
     </div>
   </dialog>
 
+  <dialog id="accessibilityModal">
+    <div class="modal-card accessibility-card">
+      <button id="closeAccessibility" class="close" aria-label="Fechar acessibilidade">×</button>
+      <div class="access-symbol" aria-hidden="true">♿</div>
+      <h2>Acessibilidade</h2>
+      <p class="centered">Personalize o jogo para enxergar, ouvir e interagir melhor.</p>
+      <div class="access-grid">
+        <button id="fontDownBtn" class="access-control"><span aria-hidden="true">A−</span>Diminuir texto</button>
+        <button id="fontUpBtn" class="access-control"><span aria-hidden="true">A+</span>Aumentar texto</button>
+        <button id="contrastBtn" class="access-control" aria-pressed="false"><span aria-hidden="true">◐</span>Alto contraste</button>
+        <button id="motionBtn" class="access-control" aria-pressed="false"><span aria-hidden="true">◎</span>Reduzir movimento</button>
+        <button id="readBtn" class="access-control wide"><span aria-hidden="true">🔈</span>Ler esta tela em voz alta</button>
+      </div>
+      <button id="resetAccessBtn" class="secondary">RESTAURAR PADRÃO</button>
+    </div>
+  </dialog>
+
+  <dialog id="librasModal">
+    <div class="modal-card libras-card">
+      <button id="closeLibras" class="close" aria-label="Fechar Libras">×</button>
+      <div class="libras-symbol" aria-hidden="true">🤟</div>
+      <h2>Conteúdo em Libras</h2>
+      <video id="librasVideo" controls playsinline preload="metadata">
+        <source src="assets/video/libras.mp4" type="video/mp4">
+      </video>
+      <div id="librasFallback">
+        <p>Para usar um vídeo gravado por intérprete, coloque o arquivo <strong>libras.mp4</strong> na pasta <strong>assets/video</strong>.</p>
+        <p>Você também pode usar o tradutor VLibras, disponível pelo botão azul na lateral da tela quando houver internet.</p>
+      </div>
+      <button id="speakInstructionsBtn" class="secondary">OUVIR INSTRUÇÕES</button>
+    </div>
+  </dialog>
+
+  <div vw class="enabled" aria-label="Tradutor VLibras">
+    <div vw-access-button class="active"></div>
+    <div vw-plugin-wrapper><div class="vw-plugin-top-wrapper"></div></div>
+  </div>
+
   <audio id="clickSound" src="assets/audio/clique.wav" preload="auto"></audio>
   <audio id="bombSound" src="assets/audio/bomba.wav" preload="auto"></audio>
   <audio id="winSound" src="assets/audio/vitoria.wav" preload="auto"></audio>
+  <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+  <script>if(window.VLibras){new window.VLibras.Widget("https://vlibras.gov.br/app")}</script>
   <script src="app.js"></script>
 </body>
 </html>

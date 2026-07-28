@@ -37,3 +37,15 @@ Depois abra `http://localhost:8080`.
 - `assets/audio/vitoria.wav`
 
 Para trocar um som, substitua o arquivo mantendo o mesmo nome.
+
+## Acessibilidade e Libras
+
+O botão **♿** oferece aumento e redução do texto, alto contraste, redução de
+movimentos, leitura em voz alta e controles grandes com descrições para leitores
+de tela.
+
+O botão **LIBRAS** abre a área sinalizada. Para incluir uma gravação feita por
+intérprete, crie a pasta `assets/video` e coloque nela o arquivo `libras.mp4`.
+Quando houver internet, o PWA também disponibiliza o tradutor VLibras. A
+tradução automática é um recurso de apoio e não substitui intérprete humano em
+atividades educacionais.
