@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+  <meta name="theme-color" content="#07142d">
+  <meta name="description" content="Jogo educativo de Neuroanatomia: combine estruturas e enfrente a Demência.">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="assets/img/icon-192.png">
+  <link rel="stylesheet" href="style.css">
+  <title>Neuro Bolha</title>
+</head>
+<body>
+  <div class="app-shell">
+    <header>
+      <button id="homeBtn" class="icon-btn" aria-label="Voltar ao início">⌂</button>
+      <div class="brand"><span>NEURO</span> BOLHA</div>
+      <button id="soundBtn" class="icon-btn" aria-label="Desligar som">🔊</button>
+    </header>
+
+    <main>
+      <section id="startScreen" class="screen active">
+        <div class="hero-orbit">
+          <img src="assets/img/1.png" alt="Neurônio azul">
+          <div class="pulse-ring"></div>
+        </div>
+        <p class="eyebrow">MISSÃO NEURAL</p>
+        <h1>Proteja suas conexões!</h1>
+        <p class="lead">Agrupe 3 estruturas iguais, fortaleça a rede neural e derrote o monstro da Demência.</p>
+        <div class="legend">
+          <span><img src="assets/img/1.png" alt="">Neurônio</span>
+          <span><img src="assets/img/2.png" alt="">Cérebro</span>
+          <span><img src="assets/img/3.png" alt="">Medula</span>
+          <span><img src="assets/img/4.png" alt="">Nervo</span>
+        </div>
+        <button id="playBtn" class="primary">COMEÇAR MISSÃO</button>
+        <button id="howBtn" class="secondary">COMO JOGAR</button>
+      </section>
+
+      <section id="gameScreen" class="screen">
+        <div class="hud">
+          <div><small>FASE</small><strong id="levelText">1</strong></div>
+          <div><small>PONTOS</small><strong id="scoreText">0</strong></div>
+          <div><small>VIDAS</small><strong id="livesText">♥ ♥ ♥</strong></div>
+        </div>
+        <div class="enemy">
+          <img src="assets/img/5.png" alt="Monstro da Demência">
+          <div class="enemy-info">
+            <div><strong>DEMÊNCIA</strong><span id="healthText">100%</span></div>
+            <div class="health"><i id="healthBar"></i></div>
+          </div>
+        </div>
+        <div class="board-wrap">
+          <canvas id="gameCanvas" aria-label="Tabuleiro do jogo Neuro Bolha"></canvas>
+          <div id="combo" aria-live="polite"></div>
+        </div>
+        <div class="shooter-panel">
+          <button id="bombBtn" class="power" aria-label="Usar bomba neural">
+            <span>💥</span><b>BOMBA</b><em id="bombCount">2</em>
+          </button>
+          <div class="next">
+            <small>AGORA</small>
+            <img id="currentImg" src="assets/img/1.png" alt="Próxima estrutura">
+          </div>
+          <div class="next dim">
+            <small>DEPOIS</small>
+            <img id="nextImg" src="assets/img/2.png" alt="Estrutura seguinte">
+          </div>
+        </div>
+        <p class="tip">Toque no tabuleiro para mirar e lançar</p>
+      </section>
+    </main>
+  </div>
+
+  <dialog id="modal">
+    <div class="modal-card">
+      <button id="closeModal" class="close" aria-label="Fechar">×</button>
+      <img id="modalImg" src="assets/img/1.png" alt="">
+      <h2 id="modalTitle">Como jogar</h2>
+      <div id="modalBody"></div>
+      <button id="modalAction" class="primary">ENTENDI</button>
+    </div>
+  </dialog>
+
+  <audio id="clickSound" src="assets/audio/clique.wav" preload="auto"></audio>
+  <audio id="bombSound" src="assets/audio/bomba.wav" preload="auto"></audio>
+  <audio id="winSound" src="assets/audio/vitoria.wav" preload="auto"></audio>
+  <script src="app.js"></script>
+</body>
+</html>

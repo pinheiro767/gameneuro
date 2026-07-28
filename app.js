@@ -1,0 +1,46 @@
+const $=s=>document.querySelector(s);
+const screens={start:$("#startScreen"),game:$("#gameScreen")};
+const canvas=$("#gameCanvas"),ctx=canvas.getContext("2d");
+const playBtn=$("#playBtn"),howBtn=$("#howBtn"),homeBtn=$("#homeBtn"),soundBtn=$("#soundBtn"),bombBtn=$("#bombBtn");
+const levelText=$("#levelText"),scoreText=$("#scoreText"),livesText=$("#livesText"),healthText=$("#healthText"),healthBar=$("#healthBar");
+const bombCount=$("#bombCount"),currentImg=$("#currentImg"),nextImg=$("#nextImg"),combo=$("#combo");
+const modal=$("#modal"),modalImg=$("#modalImg"),modalTitle=$("#modalTitle"),modalBody=$("#modalBody"),modalAction=$("#modalAction"),closeModal=$("#closeModal");
+const TYPES=[
+  {name:"Neurônio",img:"assets/img/1.png",color:"#20bfff"},
+  {name:"Cérebro",img:"assets/img/2.png",color:"#ff405c"},
+  {name:"Medula",img:"assets/img/3.png",color:"#ff8b25"},
+  {name:"Nervo",img:"assets/img/4.png",color:"#ffc53d"}
+];
+const images=TYPES.map(t=>{const i=new Image;i.src=t.img;return i});
+let grid=[],cols=8,rows=8,radius=25,current=0,next=1,score=0,lives=3,level=1,health=100,bombs=2,armed=false,sound=true,playing=false,shot=null,aim={x:0,y:0};
+const audio={click:$("#clickSound"),bomb:$("#bombSound"),win:$("#winSound")};
+function playSound(n){if(!sound)return;audio[n].currentTime=0;audio[n].play().catch(()=>{})}
+function show(name){Object.values(screens).forEach(s=>s.classList.remove("active"));screens[name].classList.add("active")}
+function resize(){const box=canvas.parentElement.getBoundingClientRect();const dpr=Math.min(devicePixelRatio,2);canvas.width=box.width*dpr;canvas.height=box.height*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);radius=Math.max(20,Math.min(29,(box.width-12)/(cols*2+1)));draw()}
+function cellPos(r,c){return{x:radius+6+c*radius*2+(r%2?radius:0),y:radius+7+r*radius*1.72}}
+function makeGrid(){grid=[];const filled=Math.min(4+level,7);for(let r=0;r<rows;r++){grid[r]=[];for(let c=0;c<cols-(r%2);c++)grid[r][c]=r<filled?Math.floor(Math.random()*4):null}}
+function newGame(){score=0;lives=3;level=1;health=100;bombs=2;current=Math.floor(Math.random()*4);next=Math.floor(Math.random()*4);armed=false;shot=null;makeGrid();playing=true;update();show("game");requestAnimationFrame(()=>{resize();draw()})}
+function update(){levelText.textContent=level;scoreText.textContent=score;livesText.textContent="♥ ".repeat(lives).trim();healthText.textContent=Math.max(0,health)+"%";healthBar.style.width=Math.max(0,health)+"%";bombCount.textContent=bombs;currentImg.src=TYPES[current].img;currentImg.alt=TYPES[current].name;nextImg.src=TYPES[next].img;bombBtn.classList.toggle("armed",armed)}
+function bubble(x,y,type,alpha=1){ctx.save();ctx.globalAlpha=alpha;ctx.beginPath();ctx.arc(x,y,radius-2,0,Math.PI*2);ctx.fillStyle=TYPES[type].color;ctx.shadowColor=TYPES[type].color;ctx.shadowBlur=10;ctx.fill();ctx.clip();if(images[type].complete)ctx.drawImage(images[type],x-radius,y-radius,radius*2,radius*2);ctx.restore();ctx.beginPath();ctx.arc(x-8,y-9,5,0,Math.PI*2);ctx.fillStyle="#ffffff66";ctx.fill()}
+function draw(){if(!canvas.width)return;const w=canvas.clientWidth,h=canvas.clientHeight;ctx.clearRect(0,0,w,h);ctx.strokeStyle="#49dfff12";ctx.lineWidth=1;for(let x=0;x<w;x+=40){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,h);ctx.stroke()}for(let r=0;r<rows;r++)for(let c=0;c<grid[r].length;c++)if(grid[r][c]!=null){const p=cellPos(r,c);bubble(p.x,p.y,grid[r][c])}
+  const base={x:w/2,y:h-radius-7};ctx.save();ctx.setLineDash([7,8]);ctx.strokeStyle="#8deaff99";ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(base.x,base.y);ctx.lineTo(aim.x||base.x,aim.y||base.y-100);ctx.stroke();ctx.restore();if(shot)bubble(shot.x,shot.y,shot.type);else bubble(base.x,base.y,current);ctx.beginPath();ctx.arc(base.x,base.y,radius+5,0,Math.PI*2);ctx.strokeStyle="#81efff";ctx.lineWidth=3;ctx.stroke()}
+function pointer(e){const r=canvas.getBoundingClientRect(),p=e.touches?.[0]||e;return{x:p.clientX-r.left,y:p.clientY-r.top}}
+function aimAt(e){if(shot)return;aim=pointer(e);aim.y=Math.min(aim.y,canvas.clientHeight-radius*3);draw()}
+function fire(e){if(shot||!playing)return;aimAt(e);playSound("click");const w=canvas.clientWidth,h=canvas.clientHeight,base={x:w/2,y:h-radius-7},dx=aim.x-base.x,dy=Math.min(-20,aim.y-base.y),len=Math.hypot(dx,dy);shot={x:base.x,y:base.y,vx:dx/len*8,vy:dy/len*8,type:current};requestAnimationFrame(tick)}
+function tick(){if(!shot)return;shot.x+=shot.vx;shot.y+=shot.vy;if(shot.x<radius||shot.x>canvas.clientWidth-radius){shot.vx*=-1;shot.x=Math.max(radius,Math.min(canvas.clientWidth-radius,shot.x))}
+  let hit=shot.y<=radius;outer:for(let r=0;r<rows;r++)for(let c=0;c<grid[r].length;c++)if(grid[r][c]!=null){const p=cellPos(r,c);if(Math.hypot(shot.x-p.x,shot.y-p.y)<radius*1.8){hit=true;break outer}}
+  if(hit){placeShot();return}draw();requestAnimationFrame(tick)}
+function nearestCell(x,y){let best={r:0,c:0,d:1e9};for(let r=0;r<rows;r++)for(let c=0;c<grid[r].length;c++)if(grid[r][c]==null){const p=cellPos(r,c),d=Math.hypot(x-p.x,y-p.y);if(d<best.d)best={r,c,d}}return best}
+function neighbors(r,c){const dirs=r%2?[[-1,0],[-1,1],[0,-1],[0,1],[1,0],[1,1]]:[[-1,-1],[-1,0],[0,-1],[0,1],[1,-1],[1,0]];return dirs.map(([a,b])=>[r+a,c+b]).filter(([a,b])=>grid[a]&&b>=0&&b<grid[a].length)}
+function cluster(r,c,type){const seen=new Set(),out=[],q=[[r,c]];while(q.length){const [a,b]=q.shift(),k=a+","+b;if(seen.has(k)||grid[a]?.[b]!==type)continue;seen.add(k);out.push([a,b]);neighbors(a,b).forEach(n=>q.push(n))}return out}
+function placeShot(){const s=shot;shot=null;const cell=nearestCell(s.x,s.y);grid[cell.r][cell.c]=s.type;const group=cluster(cell.r,cell.c,s.type);if(armed){explode(cell.r,cell.c);armed=false;bombs--;playSound("bomb")}else if(group.length>=3){group.forEach(([r,c])=>grid[r][c]=null);dropLoose();const gain=group.length*30;score+=gain;health-=Math.min(30,group.length*4);flash("CONEXÃO +"+gain)}else{lives--;if(lives<=0){addRow();lives=3}}
+  current=next;next=Math.floor(Math.random()*4);update();draw();checkState()}
+function explode(r,c){const cells=[[r,c],...neighbors(r,c)];cells.forEach(([a,b])=>{if(grid[a]?.[b]!=null){grid[a][b]=null;score+=20}});health-=25;dropLoose();flash("BOMBA NEURAL!")}
+function dropLoose(){const connected=new Set(),q=[];for(let c=0;c<grid[0].length;c++)if(grid[0][c]!=null)q.push([0,c]);while(q.length){const [r,c]=q.shift(),k=r+","+c;if(connected.has(k)||grid[r]?.[c]==null)continue;connected.add(k);neighbors(r,c).forEach(n=>q.push(n))}for(let r=1;r<rows;r++)for(let c=0;c<grid[r].length;c++)if(grid[r][c]!=null&&!connected.has(r+","+c)){grid[r][c]=null;score+=15}}
+function addRow(){for(let r=rows-1;r>0;r--)grid[r]=grid[r-1].slice(0,cols-(r%2));grid[0]=Array(cols).fill(0).map(()=>Math.floor(Math.random()*4));health=Math.min(100,health+8);flash("A DEMÊNCIA AVANÇOU")}
+function flash(t){combo.textContent=t;combo.classList.remove("show");void combo.offsetWidth;combo.classList.add("show")}
+function checkState(){if(health<=0){playing=false;playSound("win");openResult(true)}else if(grid[rows-1].some(v=>v!=null)){playing=false;openResult(false)}}
+function openResult(win){modalImg.src=win?"assets/img/1.png":"assets/img/5.png";modalTitle.textContent=win?"Rede neural protegida!":"A Demência avançou";modalBody.innerHTML=win?`<p>Você concluiu a fase ${level} com <strong>${score} pontos</strong>. Continue estimulando as conexões!</p>`:`<p>As estruturas chegaram ao limite. Tente formar grupos maiores e use a bomba neural.</p>`;modalAction.textContent=win?"PRÓXIMA FASE":"TENTAR NOVAMENTE";modalAction.onclick=()=>{modal.close();if(win){level++;health=100;bombs=Math.min(3,bombs+1);lives=3;makeGrid();playing=true;update();draw()}else newGame()};modal.showModal()}
+function how(){modalImg.src="assets/img/2.png";modalTitle.textContent="Como jogar";modalBody.innerHTML="<ol><li>Toque no tabuleiro para lançar.</li><li>Una 3 ou mais estruturas iguais.</li><li>Cada combinação enfraquece a Demência.</li><li>Ative a bomba para limpar uma área.</li></ol><p>Este é um jogo educativo; não diagnostica nem previne doenças.</p>";modalAction.textContent="ENTENDI";modalAction.onclick=()=>modal.close();modal.showModal()}
+playBtn.onclick=()=>{playSound("click");newGame()};howBtn.onclick=how;closeModal.onclick=()=>modal.close();homeBtn.onclick=()=>{playing=false;shot=null;show("start")};soundBtn.onclick=()=>{sound=!sound;soundBtn.textContent=sound?"🔊":"🔇";soundBtn.ariaLabel=sound?"Desligar som":"Ligar som";if(sound)playSound("click")};bombBtn.onclick=()=>{if(bombs&&playing){armed=!armed;playSound("click");update()}};
+canvas.addEventListener("pointermove",aimAt);canvas.addEventListener("pointerdown",fire);window.addEventListener("resize",resize);if("serviceWorker"in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js"));
