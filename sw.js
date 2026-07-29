@@ -1,5 +1,5 @@
-const CACHE="neuro-bolha-v2-acessibilidade";
-const FILES=["./","index.html","style.css","app.js","manifest.json","assets/img/1.png","assets/img/2.png","assets/img/3.png","assets/img/4.png","assets/img/5.png","assets/img/icon-192.png","assets/img/icon-512.png","assets/audio/clique.wav","assets/audio/bomba.wav","assets/audio/vitoria.wav"];
+const CACHE="neuro-bolha-v3-gifs-gameover";
+const FILES=["./","index.html","style.css","app.js","manifest.json","assets/img/1.png","assets/img/2.png","assets/img/3.png","assets/img/4.png","assets/img/5.png","assets/img/icon-192.png","assets/img/icon-512.png","assets/gif/abertura.gif","assets/gif/fase-concluida.gif","assets/audio/clique.wav","assets/audio/bomba.wav","assets/audio/vitoria.wav"];
 self.addEventListener("install",e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(FILES)).then(()=>self.skipWaiting())));
 self.addEventListener("activate",e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
 self.addEventListener("fetch",e=>{if(e.request.method!=="GET")return;e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(res=>{const copy=res.clone();caches.open(CACHE).then(c=>c.put(e.request,copy));return res}).catch(()=>caches.match("./"))))});

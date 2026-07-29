@@ -49,3 +49,11 @@ intérprete, crie a pasta `assets/video` e coloque nela o arquivo `libras.mp4`.
 Quando houver internet, o PWA também disponibiliza o tradutor VLibras. A
 tradução automática é um recurso de apoio e não substitui intérprete humano em
 atividades educacionais.
+
+## GIFs do jogo
+
+- `assets/gif/abertura.gif`: exibido antes de iniciar a partida;
+- `assets/gif/fase-concluida.gif`: exibido ao vencer cada fase.
+
+É possível substituir os dois GIFs mantendo exatamente esses nomes. A derrota
+exibe a tela **GAME OVER**, a pontuação final e o botão **JOGAR NOVAMENTE**.
