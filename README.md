@@ -52,8 +52,17 @@ atividades educacionais.
 
 ## GIFs do jogo
 
-- `assets/gif/abertura.gif`: exibido antes de iniciar a partida;
-- `assets/gif/fase-concluida.gif`: exibido ao vencer cada fase.
+- `assets/video/abertura.mp4`: vídeo exibido antes de iniciar a partida;
+- `assets/video/abertura-poster.jpg`: capa mostrada enquanto a abertura carrega;
+- `assets/video/vitoria.mp4`: vídeo exibido ao vencer cada fase;
+- `assets/video/vitoria-poster.jpg`: capa mostrada enquanto o vídeo carrega.
 
-É possível substituir os dois GIFs mantendo exatamente esses nomes. A derrota
+É possível substituir os vídeos mantendo exatamente esses nomes. A derrota
 exibe a tela **GAME OVER**, a pontuação final e o botão **JOGAR NOVAMENTE**.
+
+O tabuleiro possui onze linhas e começa com uma grande área vazia entre as
+bolhas e o lançador. A linha tracejada avermelhada indica o limite de derrota.
+
+O lançamento usa velocidade de 900 pixels por segundo, calculada pelo tempo
+real entre quadros. Assim, permanece rápido e uniforme mesmo em celulares com
+taxas de atualização diferentes.
